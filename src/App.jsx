@@ -5,6 +5,7 @@ import AddGames from "./core/private/add_games.jsx";
 import AdminProfilePage from "./core/private/admin_profile.jsx";
 import AdminDashboardPage from "./core/private/admindashboard.jsx";
 import Shuffle from "./core/private/shuffle.jsx";
+import Winner from "./core/private/winner.jsx";
 import ChatPage from "./core/public/chatpage.jsx";
 import DashboardPage from "./core/public/dashboard.jsx";
 import ForgetPassword from "./core/public/forgetPassword.jsx";
@@ -83,6 +84,14 @@ function App() {
       element: (
         <ProtectedRoute isAdminRoute={true} isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
           <Shuffle />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/winner",
+      element: (
+        <ProtectedRoute isAdminRoute={true} isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
+          <Winner />
         </ProtectedRoute>
       ),
     },
