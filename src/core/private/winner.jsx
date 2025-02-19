@@ -9,13 +9,18 @@ const Winner = () => {
     const [players, setPlayers] = useState([]);
     const [winner, setWinner] = useState("");
 
-    // Fetch tournament names from players table
+    // Fetch tournaments and players from the players table
     useEffect(() => {
         const fetchTournaments = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/api/player");
+                const response = await axios.get("http://localhost:3000/api/player/players");
 
-                // Extract unique tournament names and group players by tournament
+                if (response.data.length === 0) {
+                    console.log("No players found.");
+                    return;
+                }
+
+                // Group players by tournament
                 const tournamentMap = {};
                 response.data.forEach(player => {
                     if (!tournamentMap[player.tournament]) {
@@ -24,7 +29,7 @@ const Winner = () => {
                     tournamentMap[player.tournament].push(player.name);
                 });
 
-                // Convert object into an array for selection
+                // Convert object into an array
                 const formattedTournaments = Object.keys(tournamentMap).map(tournament => ({
                     name: tournament,
                     players: tournamentMap[tournament],
@@ -38,12 +43,12 @@ const Winner = () => {
         fetchTournaments();
     }, []);
 
-    // Handle winner selection
+    // Handle winner submission
     const handleWinnerSubmit = async () => {
         if (!selectedTournament || !winner) return;
 
         try {
-            await axios.post("http://localhost:3000/api/winners", {
+            await axios.post("http://localhost:3000/api/winners/winners", {
                 tournament: selectedTournament.name,
                 winner: winner,
             });
