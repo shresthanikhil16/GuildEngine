@@ -12,7 +12,7 @@ const AdminSidebar = ({ activeSection }) => {
     };
 
     return (
-        <aside className="w-64 h-screen bg-white text-[#9694FF] shadow-lg rounded-3xl m-4 p-4 flex flex-col justify-between">
+        <aside className="w-64 h-screen bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg rounded-3xl m-4 p-4 flex flex-col justify-between">
             <div>
                 <div
                     className="flex items-center p-4 cursor-pointer"
@@ -30,7 +30,7 @@ const AdminSidebar = ({ activeSection }) => {
                 <nav className="mt-8">
                     <ul className="space-y-2">
                         <li
-                            className={`flex items-center p-4 rounded-xl cursor-pointer ${activeSection === "addGames"
+                            className={`flex items-center text-white p-4 rounded-xl cursor-pointer ${activeSection === "addGames"
                                 ? "bg-[#9694FF] text-white"
                                 : "text-[#9694FF] hover:text-white hover:bg-[#9694FF]"
                                 }`}
@@ -40,7 +40,7 @@ const AdminSidebar = ({ activeSection }) => {
                             Add Games
                         </li>
                         <li
-                            className={`flex items-center p-4 rounded-xl cursor-pointer ${activeSection === "shuffle"
+                            className={`flex items-center text-white p-4 rounded-xl cursor-pointer ${activeSection === "shuffle"
                                 ? "bg-[#9694FF] text-white"
                                 : "text-[#9694FF] hover:text-white hover:bg-[#9694FF]"
                                 }`}
