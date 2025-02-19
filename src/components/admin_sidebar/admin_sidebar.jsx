@@ -49,6 +49,16 @@ const AdminSidebar = ({ activeSection }) => {
                             <span className="material-icons mr-4">shuffle</span>
                             Shuffle
                         </li>
+                        <li
+                            className={`flex items-center text-white p-4 rounded-xl cursor-pointer ${activeSection === "Winner"
+                                ? "bg-[#9694FF] text-white"
+                                : "text-[#9694FF] hover:text-white hover:bg-[#9694FF]"
+                                }`}
+                            onClick={() => navigate("/winner")}
+                        >
+                            <span className="material-icons mr-4">emoji_events</span>
+                            Select Winner
+                        </li>
                     </ul>
                 </nav>
             </div>
