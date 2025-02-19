@@ -23,7 +23,7 @@ const AdminSidebar = ({ activeSection }) => {
                         alt="Logo"
                         className="w-12 h-12"
                     />
-                    <span className="ml-3 text-xl font-bold text-[#9694FF]">
+                    <span className="ml-3 text-xl font-bold text-white">
                         GuidEngine
                     </span>
                 </div>
@@ -65,7 +65,7 @@ const AdminSidebar = ({ activeSection }) => {
 
             {/* Logout Button */}
             <button
-                className="mt-4 bg-white text-red p-3 rounded-xl flex items-center justify-start hover:text-red-700"
+                className="mt-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 rounded-xl flex items-center justify-start hover:text-red-700"
                 onClick={handleLogout}
             >
                 <span className="material-icons mr-2">logout</span>
