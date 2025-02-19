@@ -16,7 +16,7 @@ const MatchmakingPage = () => {
                 const response = await axios.get(`http://localhost:3000/api/matchups/tournament/${tournamentName}`);
                 setMatchups(response.data);
             } catch (error) {
-                console.error("Error fetching matchups:", error);  
+                console.error("Error fetching matchups:", error);
             }
         };
 
