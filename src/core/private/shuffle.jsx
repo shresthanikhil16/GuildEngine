@@ -4,12 +4,13 @@ import AdminNavbar from "../../components/admin_navbar/admin_navbar.jsx";
 import AdminSidebar from "../../components/admin_sidebar/admin_sidebar.jsx";
 
 const Shuffle = () => {
-    const [players, setPlayers] = useState([]);  // Stores all registered players
-    const [tournaments, setTournaments] = useState([]); // Stores unique tournaments
+    const [players, setPlayers] = useState([]);
+    const [games, setGames] = useState([]);
+    const [selectedGame, setSelectedGame] = useState(null);
+    const [tournaments, setTournaments] = useState([]);
     const [selectedTournament, setSelectedTournament] = useState(null);
     const [matchups, setMatchups] = useState([]);
 
-    // Fetch registered players
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
@@ -17,9 +18,8 @@ const Shuffle = () => {
                 const playersData = response.data;
                 setPlayers(playersData);
 
-                // Extract unique tournaments from players
-                const uniqueTournaments = [...new Set(playersData.map(player => player.tournament))];
-                setTournaments(uniqueTournaments);
+                const uniqueGames = [...new Set(playersData.map(player => player.game))];
+                setGames(uniqueGames);
             } catch (error) {
                 console.error("Error fetching players:", error);
             }
@@ -28,7 +28,14 @@ const Shuffle = () => {
         fetchPlayers();
     }, []);
 
-    // Handle tournament selection
+    const handleGameSelect = (gameName) => {
+        setSelectedGame(gameName);
+        const filteredTournaments = [...new Set(players.filter(player => player.game === gameName).map(player => player.tournament))];
+        setTournaments(filteredTournaments);
+        setSelectedTournament(null);
+        setMatchups([]);
+    };
+
     const handleTournamentSelect = (tournamentName) => {
         setSelectedTournament({
             name: tournamentName,
@@ -36,10 +43,9 @@ const Shuffle = () => {
                 .filter(player => player.tournament === tournamentName)
                 .map(player => player.name)
         });
-        setMatchups([]); // Reset matchups when changing tournaments
+        setMatchups([]);
     };
 
-    // Shuffle participants
     const shuffleParticipants = () => {
         if (!selectedTournament) return;
 
@@ -61,35 +67,40 @@ const Shuffle = () => {
 
     return (
         <div className="flex h-screen">
-            {/* Sidebar */}
             <AdminSidebar />
-
             <div className="flex-1 flex flex-col">
-                {/* Navbar */}
                 <AdminNavbar />
-
-                {/* Main Content */}
                 <div className="flex-1 flex flex-col items-center justify-center bg-white p-6">
                     <div className="w-full max-w-3xl bg-[#F4F4F9] p-8 rounded-3xl shadow-xl">
                         <h1 className="text-3xl font-bold text-center mb-6 text-[#3A3A3A]">Shuffle Participants</h1>
 
-                        {/* Tournament Selection */}
+                        <div className="mb-6">
+                            <label className="block text-lg font-semibold text-[#3A3A3A] mb-2">Select a Game:</label>
+                            <select
+                                onChange={(e) => handleGameSelect(e.target.value)}
+                                className="w-full bg-[#f0f0f0] text-black py-3 px-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#9694FF]"
+                            >
+                                <option value="">Choose a game</option>
+                                {games.map((game, index) => (
+                                    <option key={index} value={game}>{game}</option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="mb-6">
                             <label className="block text-lg font-semibold text-[#3A3A3A] mb-2">Select a Tournament:</label>
                             <select
                                 onChange={(e) => handleTournamentSelect(e.target.value)}
                                 className="w-full bg-[#f0f0f0] text-black py-3 px-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#9694FF]"
+                                disabled={!selectedGame}
                             >
                                 <option value="">Choose a tournament</option>
                                 {tournaments.map((tournament, index) => (
-                                    <option key={index} value={tournament}>
-                                        {tournament}
-                                    </option>
+                                    <option key={index} value={tournament}>{tournament}</option>
                                 ))}
                             </select>
                         </div>
 
-                        {/* Show Participants */}
                         {selectedTournament && (
                             <div className="mb-6 bg-[#E1D8FF] p-4 rounded-xl shadow-md max-h-40 overflow-y-auto">
                                 <h2 className="text-xl font-semibold text-center mb-3 text-[#3A3A3A]">
@@ -108,7 +119,6 @@ const Shuffle = () => {
                             </div>
                         )}
 
-                        {/* Shuffle Button */}
                         <button
                             onClick={shuffleParticipants}
                             className={`w-full py-3 mt-4 rounded-lg text-lg font-bold transition ${selectedTournament
@@ -120,7 +130,6 @@ const Shuffle = () => {
                             Shuffle Participants
                         </button>
 
-                        {/* Matchups Section */}
                         {matchups.length > 0 && (
                             <div className="mt-6 bg-[#E1D8FF] p-6 rounded-xl shadow-md max-h-40 overflow-y-auto">
                                 <h2 className="text-2xl font-semibold text-center mb-4 text-[#3A3A3A]">Matchups</h2>
