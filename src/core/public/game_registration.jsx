@@ -63,8 +63,9 @@ const GameRegistrationPage = () => {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Form Data to send:", formData); // Add this line to check the data being sent
         try {
-            const response = await axios.post("http://localhost:3000/api/tournaments/registerGames", formData);
+            const response = await axios.post("http://localhost:3000/api/player/registerPlayer", formData);
             setResponseMessage("Player registered successfully!");
             setFormData({ name: "", email: "", game: "", tournament: "", teamNumber: "" }); // Reset form
         } catch (error) {
