@@ -9,6 +9,7 @@ const Shuffle = () => {
     const [selectedGame, setSelectedGame] = useState(null);
     const [tournaments, setTournaments] = useState([]);
     const [selectedTournament, setSelectedTournament] = useState(null);
+    const [participants, setParticipants] = useState([]);
     const [matchups, setMatchups] = useState([]);
 
     useEffect(() => {
@@ -33,23 +34,23 @@ const Shuffle = () => {
         const filteredTournaments = [...new Set(players.filter(player => player.game === gameName).map(player => player.tournament))];
         setTournaments(filteredTournaments);
         setSelectedTournament(null);
+        setParticipants([]);
         setMatchups([]);
     };
 
     const handleTournamentSelect = (tournamentName) => {
-        setSelectedTournament({
-            name: tournamentName,
-            participants: players
-                .filter(player => player.tournament === tournamentName)
-                .map(player => player.name)
-        });
+        setSelectedTournament(tournamentName);
+        const tournamentParticipants = players
+            .filter(player => player.tournament === tournamentName)
+            .map(player => player.name);
+        setParticipants(tournamentParticipants);
         setMatchups([]);
     };
 
     const shuffleParticipants = () => {
-        if (!selectedTournament) return;
+        if (participants.length === 0) return;
 
-        const shuffled = [...selectedTournament.participants];
+        const shuffled = [...participants];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -101,13 +102,13 @@ const Shuffle = () => {
                             </select>
                         </div>
 
-                        {selectedTournament && (
+                        {selectedTournament && participants.length > 0 && (
                             <div className="mb-6 bg-[#E1D8FF] p-4 rounded-xl shadow-md max-h-40 overflow-y-auto">
                                 <h2 className="text-xl font-semibold text-center mb-3 text-[#3A3A3A]">
-                                    Participants in {selectedTournament.name}
+                                    Participants in {selectedTournament}
                                 </h2>
                                 <div className="grid grid-cols-2 gap-4">
-                                    {selectedTournament.participants.map((name, index) => (
+                                    {participants.map((name, index) => (
                                         <div
                                             key={index}
                                             className="p-3 text-center bg-[#9694FF] text-white font-bold rounded-lg shadow-lg"
@@ -121,11 +122,11 @@ const Shuffle = () => {
 
                         <button
                             onClick={shuffleParticipants}
-                            className={`w-full py-3 mt-4 rounded-lg text-lg font-bold transition ${selectedTournament
+                            className={`w-full py-3 mt-4 rounded-lg text-lg font-bold transition ${participants.length > 0
                                 ? "bg-[#9694FF] hover:bg-[#7F7CFF] text-white cursor-pointer"
                                 : "bg-gray-500 text-gray-300 cursor-not-allowed"
                                 }`}
-                            disabled={!selectedTournament}
+                            disabled={participants.length === 0}
                         >
                             Shuffle Participants
                         </button>
