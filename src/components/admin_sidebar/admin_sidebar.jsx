@@ -16,7 +16,7 @@ const AdminSidebar = ({ activeSection }) => {
             <div>
                 <div
                     className="flex items-center p-4 cursor-pointer"
-                    onClick={() => navigate("/admindash")}
+                    onClick={() => navigate("/addgames")}
                 >
                     <img
                         src="src/assets/images/GuidEngine.png"
@@ -55,7 +55,7 @@ const AdminSidebar = ({ activeSection }) => {
 
             {/* Logout Button */}
             <button
-                className="mt-4 bg-red-500 text-white p-3 rounded-xl flex items-center justify-center hover:bg-red-700"
+                className="mt-4 bg-white text-red p-3 rounded-xl flex items-center justify-start hover:text-red-700"
                 onClick={handleLogout}
             >
                 <span className="material-icons mr-2">logout</span>
