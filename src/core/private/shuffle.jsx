@@ -47,15 +47,19 @@ const Shuffle = () => {
         setMatchups([]);
     };
 
-    const shuffleParticipants = () => {
+    const shuffleParticipants = async () => {
         if (participants.length === 0) return;
 
+        // Shuffle the participants
         const shuffled = [...participants];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
 
+        console.log("Shuffled Participants:", shuffled); // Debugging log
+
+        // Pair up the participants
         const pairs = [];
         for (let i = 0; i < shuffled.length; i += 2) {
             if (i + 1 < shuffled.length) {
@@ -63,7 +67,21 @@ const Shuffle = () => {
             }
         }
 
+        console.log("Generated Matchups:", pairs); // Debugging log
+
+        // Update state with the shuffled matchups
         setMatchups(pairs);
+
+        // Save matchups to the backend
+        try {
+            await axios.post("http://localhost:3000/api/matchups/saveMatchups", {
+                tournament: selectedTournament,
+                matchups: pairs
+            });
+            console.log("Matchups saved successfully!");
+        } catch (error) {
+            console.error("Error saving matchups:", error);
+        }
     };
 
     return (
