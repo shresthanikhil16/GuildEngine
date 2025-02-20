@@ -7,22 +7,21 @@ const MatchmakingPage = () => {
     const [matchups, setMatchups] = useState([]);
 
     useEffect(() => {
-        // Replace with the actual tournament name you want to fetch data for
-        const tournamentName = "Tournament 1";  // Example tournament name
+        const tournamentName = "PUBG tdm";  // Ensure this matches the database
 
-        // Fetch matchups from backend API
         const fetchMatchups = async () => {
+            console.log("Fetching matchups for:", tournamentName); // Debugging
             try {
-                const response = await axios.get(`http://localhost:3000/api/matchups/tournament/${tournamentName}`);
+                const encodedTournament = encodeURIComponent(tournamentName.trim()); // Encode URL properly
+                const response = await axios.get(`http://localhost:3000/api/matchups/tournament/${encodedTournament}`); // ✅ Fixed template literal
                 setMatchups(response.data);
             } catch (error) {
                 console.error("Error fetching matchups:", error);
             }
         };
 
-        // Fetch matchups when the component mounts
         fetchMatchups();
-    }, []); // Empty dependency array means this will run only once after the component mounts
+    }, []);
 
     return (
         <div className="flex h-screen bg-white">
