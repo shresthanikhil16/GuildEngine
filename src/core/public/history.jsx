@@ -18,7 +18,7 @@ const HistoryPage = () => {
                 setError("Failed to fetch match history");
             } finally {
                 setLoading(false);
-            }
+            }z
         };
         fetchMatchHistory();
     }, []);
