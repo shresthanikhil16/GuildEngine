@@ -5,11 +5,11 @@ import AdminSidebar from "../../components/admin_sidebar/admin_sidebar.jsx";
 
 const Winner = () => {
     const [tournaments, setTournaments] = useState([]);
-    const [selectedTournament, setSelectedTournament] = useState(null);
     const [players, setPlayers] = useState([]);
-    const [winner, setWinner] = useState("");
+    const [selectedTournament, setSelectedTournament] = useState("");
+    const [selectedWinner, setSelectedWinner] = useState("");
 
-    // Fetch tournaments and players from the players table
+    // Fetch tournaments (from players table)
     useEffect(() => {
         const fetchTournaments = async () => {
             try {
@@ -20,42 +20,55 @@ const Winner = () => {
                     return;
                 }
 
-                // Group players by tournament
-                const tournamentMap = {};
-                response.data.forEach(player => {
-                    if (!tournamentMap[player.tournament]) {
-                        tournamentMap[player.tournament] = [];
-                    }
-                    tournamentMap[player.tournament].push(player.name);
-                });
-
-                // Convert object into an array
-                const formattedTournaments = Object.keys(tournamentMap).map(tournament => ({
-                    name: tournament,
-                    players: tournamentMap[tournament],
-                }));
-
-                setTournaments(formattedTournaments);
+                // Extract unique tournament names
+                const uniqueTournaments = [...new Set(response.data.map(player => player.tournament))];
+                setTournaments(uniqueTournaments);
             } catch (error) {
-                console.error("Error fetching tournaments", error);
+                console.error("Error fetching tournaments:", error);
             }
         };
+
         fetchTournaments();
     }, []);
 
-    // Handle winner submission
+    // Fetch players based on the selected tournament
+    useEffect(() => {
+        const fetchPlayers = async () => {
+            if (!selectedTournament) return;
+
+            try {
+                const response = await axios.get("http://localhost:3000/api/player/players");
+                const filteredPlayers = response.data.filter(player => player.tournament === selectedTournament);
+                setPlayers(filteredPlayers);
+            } catch (error) {
+                console.error("Error fetching players:", error);
+            }
+        };
+
+        fetchPlayers();
+    }, [selectedTournament]);
+
+    // Handle form submission
     const handleWinnerSubmit = async () => {
-        if (!selectedTournament || !winner) return;
+        if (!selectedTournament || !selectedWinner) {
+            alert("Please select both tournament and winner!");
+            return;
+        }
+
+        const payload = {
+            tournamentId: selectedTournament, // Sending tournament name instead of ID
+            winner: selectedWinner, // Winner name
+        };
+
+        console.log("Payload being sent:", payload);
 
         try {
-            await axios.post("http://localhost:3000/api/winners/winners", {
-                tournament: selectedTournament.name,
-                winner: winner,
-            });
-            alert("Winner has been updated successfully!");
+            const response = await axios.post("http://localhost:3000/api/winners/addwinners", payload);
+            console.log("Winner added successfully:", response.data);
+            alert("Winner added successfully!");
         } catch (error) {
-            console.error("Error updating winner", error);
-            alert("Failed to update winner.");
+            console.error("Error updating winner", error.response?.data || error);
+            alert(error.response?.data?.error || "Failed to add winner");
         }
     };
 
@@ -76,18 +89,14 @@ const Winner = () => {
                                 Select a Tournament:
                             </label>
                             <select
-                                onChange={(e) => {
-                                    const tournament = tournaments.find(t => t.name === e.target.value);
-                                    setSelectedTournament(tournament);
-                                    setPlayers(tournament ? tournament.players : []);
-                                    setWinner("");
-                                }}
+                                onChange={(e) => setSelectedTournament(e.target.value)}
+                                value={selectedTournament}
                                 className="w-full bg-[#f0f0f0] text-black py-3 px-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#9694FF]"
                             >
                                 <option value="">Choose a tournament</option>
                                 {tournaments.map((tournament, index) => (
-                                    <option key={index} value={tournament.name}>
-                                        {tournament.name}
+                                    <option key={index} value={tournament}>
+                                        {tournament}
                                     </option>
                                 ))}
                             </select>
@@ -100,12 +109,15 @@ const Winner = () => {
                                     Select a Winner:
                                 </label>
                                 <select
-                                    onChange={(e) => setWinner(e.target.value)}
+                                    onChange={(e) => setSelectedWinner(e.target.value)}
+                                    value={selectedWinner}
                                     className="w-full bg-[#f0f0f0] text-black py-3 px-4 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-[#9694FF]"
                                 >
                                     <option value="">Choose a player</option>
-                                    {players.map((player, index) => (
-                                        <option key={index} value={player}>{player}</option>
+                                    {players.map((player) => (
+                                        <option key={player._id} value={player.name}>
+                                            {player.name}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -114,11 +126,11 @@ const Winner = () => {
                         {/* Submit Button */}
                         <button
                             onClick={handleWinnerSubmit}
-                            className={`w-full py-3 mt-4 rounded-lg text-lg font-bold transition ${selectedTournament && winner
+                            className={`w-full py-3 mt-4 rounded-lg text-lg font-bold transition ${selectedTournament && selectedWinner
                                 ? "bg-[#9694FF] hover:bg-[#7F7CFF] text-white cursor-pointer"
                                 : "bg-gray-500 text-gray-300 cursor-not-allowed"
                                 }`}
-                            disabled={!selectedTournament || !winner}
+                            disabled={!selectedTournament || !selectedWinner}
                         >
                             Submit Winner
                         </button>
