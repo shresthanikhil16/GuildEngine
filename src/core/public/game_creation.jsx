@@ -38,7 +38,7 @@ const TournamentCreationPage = () => {
         e.preventDefault();
         try {
             // Send the form data to the backend API to create the tournament
-            const response = await axios.post("http://localhost:3000/api/tournaments/createTournament", formData, {
+            const response = await axios.post("http://localhost:3000/api/tournaments/registerGames", formData, {
                 headers: {
                     "Content-Type": "application/json",
                 },
