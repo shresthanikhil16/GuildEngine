@@ -7,6 +7,7 @@ const SignupPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm_password, setConfirmPassword] = useState("");
+    const [profilePicture] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -27,6 +28,7 @@ const SignupPage = () => {
                 password,
                 confirm_password,
                 role: "user",
+                profilePicture,
             });
 
             console.log("Registration successful:", response.data);
