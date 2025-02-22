@@ -6,6 +6,7 @@ import AdminProfilePage from "./core/private/admin_profile.jsx";
 import AdminDashboardPage from "./core/private/admindashboard.jsx";
 import Shuffle from "./core/private/shuffle.jsx";
 import Winner from "./core/private/winner.jsx";
+import ChatDetailsPage from "./core/public/chatDetailsPage.jsx";
 import ChatPage from "./core/public/chatpage.jsx";
 import DashboardPage from "./core/public/dashboard.jsx";
 import ForgetPassword from "./core/public/forgetPassword.jsx";
@@ -20,12 +21,12 @@ import ResetPasswordPage from "./core/public/resetPassword.jsx";
 import SignupPage from "./core/public/signup.jsx";
 import WelcomePage from "./core/public/welcomepage.jsx";
 
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Check localStorage for token and role
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     if (token && role) {
@@ -34,7 +35,6 @@ function App() {
     }
   }, []);
 
-  // Public Routes (Always accessible)
   const publicRoutes = [
     { path: "/", element: <GetStarted /> },
     { path: "/welcomepage", element: <WelcomePage /> },
@@ -50,10 +50,11 @@ function App() {
     { path: "/history", element: <HistoryPage /> },
     { path: "/matchmaking", element: <MatchmakingPage /> },
     { path: "/tournaments/:gameName", element: <GameRegistrationPage /> },
+    { path: "/chat/:userId", element: <ChatDetailsPage /> },
+
     { path: "*", element: <>Page not found</> },
   ];
 
-  // Private/Admin Routes (Require authentication and admin role)
   const privateRoutes = [
     {
       path: "/admindash",
@@ -97,10 +98,7 @@ function App() {
     },
   ];
 
-  // Combine all routes
   const routes = [...publicRoutes, ...privateRoutes];
-
-  // Router
   const router = createBrowserRouter(routes);
 
   return (
