@@ -5,7 +5,24 @@ import Sidebar from "../../components/sidebar/sidebar";
 
 const MatchmakingPage = () => {
     const [matchups, setMatchups] = useState([]);
-    const [selectedTournament, setSelectedTournament] = useState("Valo Scrims"); // Default selected tournament
+    const [tournaments, setTournaments] = useState([]); // State to store tournament names
+    const [selectedTournament, setSelectedTournament] = useState(""); // Initial state for selected tournament
+
+    useEffect(() => {
+        const fetchTournaments = async () => {
+            try {
+                const response = await axios.get("http://localhost:3000/api/matchups/tournaments"); // Fetch tournaments from the matchups API
+                if (response.data && response.data.length > 0) {
+                    setTournaments(response.data); // Set tournament names
+                    setSelectedTournament(response.data[0]); // Set the default selected tournament
+                }
+            } catch (error) {
+                console.error("Error fetching tournaments:", error);
+            }
+        };
+
+        fetchTournaments(); // Call the function to fetch tournaments
+    }, []);
 
     useEffect(() => {
         const fetchMatchups = async () => {
@@ -28,7 +45,7 @@ const MatchmakingPage = () => {
             }
         };
 
-        fetchMatchups();
+        fetchMatchups(); // Call the function to fetch matchups when tournament changes
     }, [selectedTournament]);
 
     const handleTournamentChange = (event) => {
@@ -53,9 +70,11 @@ const MatchmakingPage = () => {
                                 onChange={handleTournamentChange}
                                 className="border rounded p-3 text-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300"
                             >
-                                <option value="Valo Scrims">Valo Scrims</option>
-                                <option value="Pubg 1v1">Pubg 1v1</option>
-                                {/* Add more tournament options as needed */}
+                                {tournaments.map((tournament, index) => (
+                                    <option key={index} value={tournament}>
+                                        {tournament}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
