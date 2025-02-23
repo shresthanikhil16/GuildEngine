@@ -1,11 +1,13 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [role, setRole] = useState(""); // Store role for useEffect
+
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -18,32 +20,35 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
         }
 
         try {
-            const response = await axios.post(
-                "http://localhost:3000/api/auth/login",
-                { email, password }
-            );
+            const response = await axios.post("http://localhost:3000/api/auth/login", {
+                email,
+                password,
+            });
 
             const { token, role } = response.data;
+            console.log("Login Success, Role:", role); // Debugging
 
             localStorage.setItem("token", token);
             localStorage.setItem("role", role);
 
             setIsAuthenticated(true);
             setIsAdmin(role === "admin");
-
-            if (role === "admin") {
-                navigate("/admindash");
-            } else if (role === "user") {
-                navigate("/dashboard");
-            } else {
-                throw new Error("Invalid role received from the server.");
-            }
+            setRole(role); // Update role state
         } catch (error) {
             console.error("Login error: ", error);
             const errorMsg = error?.response?.data?.message || "Error logging in. Please try again.";
             setError(errorMsg);
         }
     };
+
+    // 🔥 UseEffect to navigate when role updates
+    useEffect(() => {
+        if (role === "admin") {
+            navigate("/admindash");
+        } else if (role === "user") {
+            navigate("/dashboard");
+        }
+    }, [role, navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -52,17 +57,17 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                     <img
                         src="src/assets/images/GuidEngine.png"
                         alt="Logo"
+                        id="logo" // ✅ Fixed locator issue
                         className="w-64 h-64"
                     />
                 </div>
 
                 <div className="lg:w-1/2 w-full p-8 text-center">
-                    <h2 className="text-3xl font-bold text-gray-900">Log in to your account</h2>
-                    <p className="mt-2 text-sm text-gray-500">Welcome back! Please enter your details.</p>
+                    <h2 className="text-3xl font-bold text-gray-900">Welcome back!</h2>
+                    <p className="mt-2 text-sm text-gray-500">Please enter your details.</p>
 
                     <form className="mt-8 space-y-6" onSubmit={handleLogin}>
                         <div>
-                            <label htmlFor="email" className="sr-only">Email</label>
                             <input
                                 id="email"
                                 name="email"
@@ -70,13 +75,12 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md"
                                 placeholder="Enter your email"
                             />
                         </div>
 
                         <div className="mt-4">
-                            <label htmlFor="password" className="sr-only">Password</label>
                             <input
                                 id="password"
                                 name="password"
@@ -84,30 +88,17 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md"
                                 placeholder="Password"
                             />
                         </div>
 
-                        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-
-                        <div className="flex items-center justify-between mt-4">
-                            <div className="flex items-center">
-                                <input
-                                    id="remember_me"
-                                    name="remember_me"
-                                    type="checkbox"
-                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                                <label htmlFor="remember_me" className="ml-2 text-sm text-gray-600">Remember for 30 days</label>
-                            </div>
-                            <a href="#" className="text-sm font-medium text-blue-600 hover:underline">Forgot password?</a>
-                        </div>
+                        {error && <p data-testid="error-message" className="text-red-500 text-sm mt-2">{error}</p>}
 
                         <div className="mt-6">
                             <button
                                 type="submit"
-                                className="w-full px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="w-full px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700"
                             >
                                 Sign in
                             </button>
@@ -117,7 +108,7 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                             <button
                                 type="button"
                                 onClick={() => navigate("/register")}
-                                className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
                             >
                                 Sign up
                             </button>
