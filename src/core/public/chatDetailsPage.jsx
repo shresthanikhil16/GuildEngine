@@ -28,6 +28,7 @@ const ChatDetailsPage = () => {
 
                 console.log(`🔍 Fetching messages between ${currentUser._id} and ${userId}`);
 
+                // Fetch messages
                 const response = await axios.get(`http://localhost:3000/api/messages/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -40,10 +41,11 @@ const ChatDetailsPage = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                if (recipientResponse.data && recipientResponse.data.user) {
+                if (recipientResponse.data?.user) {
                     setRecipientName(recipientResponse.data.user.name); // Get the name of the recipient
+                } else {
+                    console.error("❌ Recipient user not found.");
                 }
-
             } catch (error) {
                 console.error("❌ Error fetching messages:", error.response?.data || error.message);
             }
