@@ -40,7 +40,7 @@ const Profile = () => {
 
                 // Prepend base URL to the profile picture path
                 setUserData({
-                    username: data.user.name || "",
+                    username: data.user.username || "",
                     email: data.user.email || "",
                     profilePicture: `http://localhost:3000/${data.user.profilePicture}`, // Correctly formatted URL
                     newPassword: "",
@@ -82,7 +82,7 @@ const Profile = () => {
             }
 
             const formData = new FormData();
-            formData.append("name", userData.username);
+            formData.append("username", userData.username);
             formData.append("email", userData.email);
             if (userData.newPassword) {
                 formData.append("newPassword", userData.newPassword);
