@@ -7,8 +7,31 @@ import Sidebar from "../../components/sidebar/sidebar";
 const ChatPage = () => {
     const [users, setUsers] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
-    const [recentlyMessaged, setRecentlyMessaged] = useState([]); // State for recently messaged users
+    const [recentlyMessaged, setRecentlyMessaged] = useState([]); // Recently messaged users
     const navigate = useNavigate();
+
+    const fetchCurrentUser = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("❌ No authentication token found.");
+                return;
+            }
+
+            const response = await axios.get("http://localhost:3000/api/auth/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.data?.user) {
+                console.log("✅ Fetched Current User:", response.data.user);
+                setCurrentUser(response.data.user);
+            } else {
+                console.warn("⚠️ No current user found in response.");
+            }
+        } catch (error) {
+            console.error("❌ Error fetching current user:", error.response?.data || error.message);
+        }
+    };
 
     const fetchUsers = async () => {
         try {
@@ -18,12 +41,11 @@ const ChatPage = () => {
                 return;
             }
 
-            // Fetch all users
             const response = await axios.get("http://localhost:3000/api/auth/users", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            if (response.data && response.data.users) {
+            if (response.data?.users) {
                 // Filter out the current user from the users list
                 const filteredUsers = response.data.users.filter(user => user._id !== currentUser?._id);
                 setUsers(filteredUsers);
@@ -35,37 +57,13 @@ const ChatPage = () => {
         }
     };
 
-    const fetchCurrentUser = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.error("❌ No authentication token found.");
-                return;
-            }
-
-            // Fetch current user profile
-            const response = await axios.get("http://localhost:3000/api/auth/profile", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data && response.data.user) {
-                console.log("✅ Fetched Current User:", response.data.user);
-                setCurrentUser(response.data.user);
-            } else {
-                console.warn("⚠️ No current user found in response.");
-            }
-        } catch (error) {
-            console.error("❌ Error fetching current user:", error.response?.data || error.message);
-        }
-    };
-
     useEffect(() => {
-        fetchCurrentUser(); // Fetch the current user first
+        fetchCurrentUser();
     }, []);
 
     useEffect(() => {
         if (currentUser) {
-            fetchUsers(); // Fetch users only after currentUser is set
+            fetchUsers();
         }
     }, [currentUser]);
 
@@ -84,11 +82,9 @@ const ChatPage = () => {
             if (existingIndex !== -1) {
                 // Remove the existing user from the list
                 const updatedList = prev.filter((_, index) => index !== existingIndex);
-                // Add the user to the top of the list
-                return [user, ...updatedList];
+                return [user, ...updatedList]; // Add user to the top of the list
             }
-            // If the user is not in the list, add them to the top
-            return [user, ...prev];
+            return [user, ...prev]; // If user is not in the list, add them to the top
         });
     };
 
