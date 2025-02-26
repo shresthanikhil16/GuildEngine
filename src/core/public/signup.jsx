@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
-    const [name, setName] = useState("");
+    const [username, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confirm_password, setConfirmPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState(""); // Corrected state variable
     const [profilePicture] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -16,17 +16,17 @@ const SignupPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (password !== confirm_password) {
+        if (password !== confirmPassword) {
             setError("Passwords do not match.");
             return;
         }
 
         try {
             const response = await axios.post("http://localhost:3000/api/auth/register", {
-                name,
+                username,
                 email,
                 password,
-                confirm_password,
+                confirmPassword,
                 role: "user",
                 profilePicture,
             });
@@ -74,10 +74,10 @@ const SignupPage = () => {
                         <div>
                             <label htmlFor="name" className="sr-only">Full Name</label>
                             <input
-                                id="name"
-                                name="name"
+                                id="username"
+                                name="username"
                                 type="text"
-                                value={name}
+                                value={username}
                                 onChange={(e) => setName(e.target.value)}
                                 required
                                 className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -111,13 +111,13 @@ const SignupPage = () => {
                             />
                         </div>
                         <div className="mt-4">
-                            <label htmlFor="confirm_password" className="sr-only">Confirm Password</label>
+                            <label htmlFor="confirmPassword" className="sr-only">Confirm Password</label>
                             <input
-                                id="confirm_password"
-                                name="confirm_password"
+                                id="confirmPassword"
+                                name="confirmPassword"
                                 type="password"
-                                value={confirm_password}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                value={confirmPassword} // Corrected value
+                                onChange={(e) => setConfirmPassword(e.target.value)} // Corrected state update
                                 required
                                 className="w-full px-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Confirm Password"
@@ -131,7 +131,6 @@ const SignupPage = () => {
                             <button
                                 type="submit"
                                 className="w-full px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-
                             >
                                 Sign up
                             </button>
