@@ -6,7 +6,7 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [role, setRole] = useState(""); // Store role for useEffect
+    const [role, setRole] = useState("");
 
     const navigate = useNavigate();
 
@@ -25,15 +25,17 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                 password,
             });
 
+            console.log(response);
+
             const { token, role } = response.data;
-            console.log("Login Success, Role:", role); // Debugging
+            console.log("Login Success, Role:", role);
 
             localStorage.setItem("token", token);
             localStorage.setItem("role", role);
 
             setIsAuthenticated(true);
             setIsAdmin(role === "admin");
-            setRole(role); // Update role state
+            setRole(role);
         } catch (error) {
             console.error("Login error: ", error);
             const errorMsg = error?.response?.data?.message || "Error logging in. Please try again.";
@@ -41,7 +43,6 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
         }
     };
 
-    // 🔥 UseEffect to navigate when role updates
     useEffect(() => {
         if (role === "admin") {
             navigate("/admindash");
@@ -57,7 +58,7 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                     <img
                         src="src/assets/images/GuidEngine.png"
                         alt="Logo"
-                        id="logo" // ✅ Fixed locator issue
+                        id="logo"
                         className="w-64 h-64"
                     />
                 </div>
@@ -94,6 +95,16 @@ const LoginPage = ({ setIsAuthenticated, setIsAdmin }) => {
                         </div>
 
                         {error && <p data-testid="error-message" className="text-red-500 text-sm mt-2">{error}</p>}
+
+                        <div className="mt-2 text-right">
+                            <button
+                                type="button"
+                                onClick={() => navigate("/forgetpassword")}
+                                className="text-sm text-blue-600 hover:underline"
+                            >
+                                Forgot Password?
+                            </button>
+                        </div>
 
                         <div className="mt-6">
                             <button
