@@ -5,12 +5,12 @@ import Navbar from "../../components/navbar/navbar.jsx";
 import Sidebar from "../../components/sidebar/sidebar.jsx";
 
 const ChatDetailsPage = () => {
-    const { userId } = useParams(); // Extract userId from the URL
+    const { userId } = useParams();
     const location = useLocation();
-    const currentUser = location.state?.currentUser; // Get the logged-in user
+    const currentUser = location.state?.currentUser;
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
-    const [recipientName, setRecipientName] = useState(""); // State for recipient name
+    const [recipientName, setRecipientName] = useState("");
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -28,7 +28,6 @@ const ChatDetailsPage = () => {
 
                 console.log(`🔍 Fetching messages between ${currentUser._id} and ${userId}`);
 
-                // Fetch messages
                 const response = await axios.get(`http://localhost:3000/api/messages/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -36,15 +35,13 @@ const ChatDetailsPage = () => {
                 console.log("✅ Messages fetched:", response.data.messages);
                 setMessages(response.data.messages);
 
-                // Fetch recipient name using the userId
+                // Fetch recipient name
                 const recipientResponse = await axios.get(`http://localhost:3000/api/auth/users/${userId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (recipientResponse.data?.user) {
-                    setRecipientName(recipientResponse.data.user.name); // Get the name of the recipient
-                } else {
-                    console.error("❌ Recipient user not found.");
+                    setRecipientName(recipientResponse.data.user.username);
                 }
             } catch (error) {
                 console.error("❌ Error fetching messages:", error.response?.data || error.message);
@@ -81,7 +78,7 @@ const ChatDetailsPage = () => {
             });
 
             console.log("✅ Message sent:", response.data);
-            setMessages([...messages, response.data.message]); // Assuming response.data.message contains the sent message
+            setMessages([...messages, response.data.message]);
             setNewMessage("");
         } catch (error) {
             console.error("❌ Error sending message:", error.response?.data || error.message);
@@ -90,17 +87,17 @@ const ChatDetailsPage = () => {
 
     return (
         <div className="flex h-screen bg-purple-50">
-            <Sidebar /> {/* Add Sidebar */}
+            <Sidebar />
             <div className="flex-1 flex flex-col">
-                <Navbar /> {/* Add Navbar */}
+                <Navbar />
                 <div className="chat-container flex flex-col p-4">
-                    <h2 className="text-xl font-semibold mb-4">Chat with {recipientName || "Loading..."}</h2> {/* Display recipient's name */}
-                    <div className="messages flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-lg mb-4" style={{ backgroundColor: '#f9f5ff' }}>
+                    <h2 className="text-xl font-semibold mb-4">Chat with {recipientName || "Loading..."}</h2>
+                    <div className="messages flex-1 overflow-y-auto p-4 bg-white rounded-lg shadow-lg mb-4">
                         {messages.map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`my-2 p-2 rounded-lg max-w-xs ${msg.sender === currentUser._id ? "bg-blue-200 text-right ml-auto" : "bg-purple-200 text-left"}`}
-                                style={{ borderRadius: '10px' }}
+                                className={`my-2 p-2 rounded-lg max-w-xs ${msg.sender === currentUser._id ? "bg-blue-200 text-right ml-auto" : "bg-purple-200 text-left"
+                                    }`}
                             >
                                 <strong>{msg.sender === currentUser._id ? "You" : recipientName || "Them"}:</strong> {msg.text}
                             </div>
@@ -113,12 +110,10 @@ const ChatDetailsPage = () => {
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
                             className="flex-1 border rounded-lg p-2 mr-2"
-                            style={{ borderColor: '#e0e0e0', backgroundColor: '#fff', width: '75%', minWidth: '250px' }} // Set a minimum width
                         />
                         <button
                             onClick={sendMessage}
                             className="bg-purple-500 text-white rounded-lg px-4 py-2"
-                            style={{ minWidth: '80px' }} // Set a minimum width for the button
                         >
                             Send
                         </button>
